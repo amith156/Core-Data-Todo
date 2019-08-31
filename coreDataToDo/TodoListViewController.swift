@@ -12,11 +12,17 @@ class TodoListViewController : UITableViewController {
 
     var itemArray = ["Amith", "Ranjan", "Mark", "Tony"]
     
+    //cretating a User default for storing key value pares.
+    let defaults = UserDefaults.standard
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
-        //this is a test for version controle.
+        //loding data using user defaults
+        if let items = defaults.array(forKey: "TodoListKey") as? [String] {
+            itemArray = items
+        }
 
     }
 
@@ -57,10 +63,16 @@ class TodoListViewController : UITableViewController {
         let action = UIAlertAction(title: "Add", style: .default) {
             (action) in
             //perform actions once the add button is pressed.
+            
             //checks the textfield if it's empty.
             if textField.text!.isEmpty != true {
+                
                 //appends the list and displays it.
                 self.itemArray.append(textField.text!)
+                
+                //storing the array using key-value by defaults.
+                self.defaults.set(self.itemArray, forKey: "TodoListKey")
+                
                 self.tableView.reloadData()
             }
         }
