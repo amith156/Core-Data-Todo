@@ -10,7 +10,7 @@ import UIKit
 
 class TodoListViewController : UITableViewController {
 
-    let itemArray = ["Amith", "Ranjan", "Mark", "Tony"]
+    var itemArray = ["Amith", "Ranjan", "Mark", "Tony"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,22 +21,23 @@ class TodoListViewController : UITableViewController {
     }
 
     //MARK - TableView Datasourse methods
-    
+    //Returns the number of rows need to be created in the list.
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itemArray.count
     }
     
+    //This method is called on the creation of the list.
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+        //gets the reference of the cell using an identifier and adds the list to the cell.
         let cell = tableView.dequeueReusableCell(withIdentifier: "tableViewCellID", for: indexPath)
         cell.textLabel?.text = itemArray[indexPath.row]
         return cell
     }
     
     //MARK - TableView Delegate methods
-    
+    //This method is called when the user taps on the item of the list.
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
+        //if it has a checkmark it unchecks and if it dosn't it adds a checkmark.
         if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
             tableView.cellForRow(at: indexPath)?.accessoryType = .none
         } else {
@@ -45,6 +46,34 @@ class TodoListViewController : UITableViewController {
         
         tableView.deselectRow(at: indexPath, animated: true)
         
+    }
+    
+    //MARK - Add new item
+    @IBAction func addItemButton(_ sender: UIBarButtonItem) {
+        
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Add Item", message: "", preferredStyle: .alert)
+        let action = UIAlertAction(title: "Add", style: .default) {
+            (action) in
+            //perform actions once the add button is pressed.
+            //checks the textfield if it's empty.
+            if textField.text!.isEmpty != true {
+                //appends the list and displays it.
+                self.itemArray.append(textField.text!)
+                self.tableView.reloadData()
+            }
+        }
+        
+        //This is the alert text field which is added to the alert.
+        alert.addTextField { (alertText) in
+            alertText.placeholder = "Please type your todo!"
+            textField = alertText
+        }
+        alert.addAction(action)
+        
+        //this presents the allert.
+        present(alert, animated: true, completion: nil)
     }
 
 }
