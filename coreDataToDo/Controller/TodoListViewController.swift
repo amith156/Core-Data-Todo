@@ -12,34 +12,13 @@ class TodoListViewController : UITableViewController {
 
     var itemArray = [Items]()
     
-    //cretating a User default for storing key value pares.
-    let defaults = UserDefaults.standard
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("itemList.plist")
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        
-        let newItem1 = Items()
-        newItem1.title = "homework"
-        itemArray.append(newItem1)
-        
-        let newItem2 = Items()
-        newItem2.title = "gym"
-        itemArray.append(newItem2)
-        
-        let newItem3 = Items()
-        newItem3.title = "running"
-        itemArray.append(newItem3)
-        
-        let newItem4 = Items()
-        newItem4.title = "errands to tim"
-        itemArray.append(newItem4)
-        
-        //loding data using user defaults
-        if let items = defaults.array(forKey: "TodoListKey") as? [Items] {
-            itemArray = items
-        }
-
+        //this lodes all the items from the plist.
+        lodeItems()
     }
 
     //MARK - TableView Datasourse methods
@@ -70,20 +49,8 @@ class TodoListViewController : UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         itemArray[indexPath.row].check = !(itemArray[indexPath.row].check)
-//        if itemArray[indexPath.row].check == false {
-//            itemArray[indexPath.row].check = true
-//        } else if itemArray[indexPath.row].check == true {
-//            itemArray[indexPath.row].check = false
-//        }
         
-        tableView.reloadData()
-        
-        //if it has a checkmark it unchecks and if it dosn't it adds a checkmark.
-//        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-//            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-//        } else {
-//            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-//        }
+        self.saveData()
         
         tableView.deselectRow(at: indexPath, animated: true)
         
@@ -110,10 +77,7 @@ class TodoListViewController : UITableViewController {
                 //appends the list and displays it.
                 self.itemArray.append(newItem)
                 
-                //storing the array using key-value by defaults.
-                self.defaults.set(self.itemArray, forKey: "TodoListKey")
-                
-                self.tableView.reloadData()
+                self.saveData()
             }
         }
         
@@ -128,5 +92,29 @@ class TodoListViewController : UITableViewController {
         present(alert, animated: true, completion: nil)
     }
 
+    func saveData() {
+        
+        let propertyEncoder = PropertyListEncoder()
+        
+        do {
+            let data = try propertyEncoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("-----> error Encoding or writing, \(error)")
+        }
+        
+        self.tableView.reloadData()
+    }
+    
+    func lodeItems() {
+        if let data = try? Data(contentsOf: dataFilePath!) {
+            let decoder = PropertyListDecoder()
+            do {
+                itemArray = try decoder.decode([Items].self, from: data)
+            } catch {
+                print("-----> error Decoding or writing, \(error)")
+            }
+        }
+    }
 }
 
