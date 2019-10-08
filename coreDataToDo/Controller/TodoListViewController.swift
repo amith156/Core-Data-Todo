@@ -7,18 +7,23 @@
 //
 
 import UIKit
+import CoreData
 
 class TodoListViewController : UITableViewController {
 
-    var itemArray = [Items]()
+    var itemArray = [ItemsEntity]()
     
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("itemList.plist")
+//    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+    
+    //trying to get viewContext of persistentContainer from AppDelegate file and we are creating an object of live application and down-casting it to AppDelegate.
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         //this lodes all the items from the plist.
-        lodeItems()
+//        lodeItems()
     }
 
     //MARK: - TableView Datasourse methods
@@ -66,14 +71,15 @@ class TodoListViewController : UITableViewController {
             (action) in
             //perform actions once the add button is pressed.
             
-            let newItem = Items()
+            let newItem = ItemsEntity(context: self.context)
+            
             
             //checks the textfield if it's empty.
             if textField.text!.isEmpty != true {
                 
                 //adding alertText to tile of the obj.
                 newItem.title = textField.text!
-                
+                newItem.check = false
                 //appends the list and displays it.
                 self.itemArray.append(newItem)
                 
@@ -93,29 +99,25 @@ class TodoListViewController : UITableViewController {
     }
 
     func saveData() {
-        
-        let propertyEncoder = PropertyListEncoder()
-        
         do {
-            let data = try propertyEncoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
+            try context.save()
         } catch {
-            print("-----> error Encoding or writing, \(error)")
+            print("-----> error saving context , \(error)")
         }
         
         self.tableView.reloadData()
     }
     
-    func lodeItems() {
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            do {
-                itemArray = try decoder.decode([Items].self, from: data)
-            } catch {
-                print("-----> error Decoding or writing, \(error)")
-            }
-        }
-    }
+//    func lodeItems() {
+//        if let data = try? Data(contentsOf: dataFilePath!) {
+//            let decoder = PropertyListDecoder()
+//            do {
+//                itemArray = try decoder.decode([Items].self, from: data)
+//            } catch {
+//                print("-----> error Decoding or writing, \(error)")
+//            }
+//        }
+//    }
 }
 
 //this is a testion commit!
