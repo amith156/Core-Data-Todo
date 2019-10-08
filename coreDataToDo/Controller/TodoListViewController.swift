@@ -21,7 +21,7 @@ class TodoListViewController : UITableViewController {
         lodeItems()
     }
 
-    //MARK - TableView Datasourse methods
+    //MARK: - TableView Datasourse methods
     //Returns the number of rows need to be created in the list.
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itemArray.count
@@ -44,7 +44,7 @@ class TodoListViewController : UITableViewController {
         return cell
     }
     
-    //MARK - TableView Delegate methods
+    //MARK: - TableView Delegate methods
     //This method is called when the user taps on the item of the list.
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
@@ -56,7 +56,7 @@ class TodoListViewController : UITableViewController {
         
     }
     
-    //MARK - Add new item
+    //MARK: - Add new item
     @IBAction func addItemButton(_ sender: UIBarButtonItem) {
         
         var textField = UITextField()
