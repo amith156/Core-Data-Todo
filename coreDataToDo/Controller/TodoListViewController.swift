@@ -23,7 +23,7 @@ class TodoListViewController : UITableViewController {
         super.viewDidLoad()
         print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         //this lodes all the items from the plist.
-//        lodeItems()
+        lodeItems()
     }
 
     //MARK: - TableView Datasourse methods
@@ -52,6 +52,13 @@ class TodoListViewController : UITableViewController {
     //MARK: - TableView Delegate methods
     //This method is called when the user taps on the item of the list.
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        //deleting items
+//        context.delete(itemArray[indexPath.row])
+//        itemArray.remove(at: indexPath.row)
+        
+        //setting or changing value of the string item
+//        itemArray[indexPath.row].setValue("example string.", forKey: "title")
         
         itemArray[indexPath.row].check = !(itemArray[indexPath.row].check)
         
@@ -108,17 +115,15 @@ class TodoListViewController : UITableViewController {
         self.tableView.reloadData()
     }
     
-//    func lodeItems() {
-//        if let data = try? Data(contentsOf: dataFilePath!) {
-//            let decoder = PropertyListDecoder()
-//            do {
-//                itemArray = try decoder.decode([Items].self, from: data)
-//            } catch {
-//                print("-----> error Decoding or writing, \(error)")
-//            }
-//        }
-//    }
+    func lodeItems() {
+        let request : NSFetchRequest<ItemsEntity> = ItemsEntity.fetchRequest()
+        
+        do {
+            itemArray = try context.fetch(request)
+        } catch {
+            print("------> error on loading context, \(error)")
+        }
+    }
+    
 }
-
-//this is a testion commit!
 
