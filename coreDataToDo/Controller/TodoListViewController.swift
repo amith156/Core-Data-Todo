@@ -115,15 +115,41 @@ class TodoListViewController : UITableViewController {
         self.tableView.reloadData()
     }
     
-    func lodeItems() {
-        let request : NSFetchRequest<ItemsEntity> = ItemsEntity.fetchRequest()
+    func lodeItems(request : NSFetchRequest<ItemsEntity> = ItemsEntity.fetchRequest()) {
+//        let request : NSFetchRequest<ItemsEntity> = ItemsEntity.fetchRequest()
         
         do {
             itemArray = try context.fetch(request)
         } catch {
             print("------> error on loading context, \(error)")
         }
+        self.tableView.reloadData()
     }
     
+}
+//MARK:- Search Bar
+extension TodoListViewController : UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        let request : NSFetchRequest<ItemsEntity> = ItemsEntity.fetchRequest()
+        
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        
+        let sortDiscriptor = NSSortDescriptor(key: "title", ascending: true)
+        request.sortDescriptors = [sortDiscriptor]
+        
+        lodeItems(request: request)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if (searchBar.text?.count == 0) {
+            lodeItems()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        } 
+    }
 }
 
